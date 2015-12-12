@@ -7,13 +7,8 @@ import (
 
 const separator = "="
 
-var Import Envmap
-
+// Envmap is a mapping of environment keys to values
 type Envmap map[string]string
-
-func init() {
-	Import = ToMap(os.Environ())
-}
 
 // Export exports the keys and values defined in this Envmap to the
 // actual environment
@@ -23,6 +18,11 @@ func (e Envmap) Export() {
 		os.Setenv(k, v)
 	}
 
+}
+
+// Import creates an Envmap from the actual environment.
+func Import() Envmap {
+	return ToMap(os.Environ())
 }
 
 // Join builds a environment variable declaration out of seperate
