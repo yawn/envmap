@@ -20,6 +20,62 @@ func (e Envmap) Export() {
 
 }
 
+// Pop removes prefixes from all environment variable keys that match the
+// filter. Matching keys that have no prefixes anymore, get dropped.
+func (e Envmap) Pop(prefix string, filter func(string) bool) Envmap {
+
+	var m Envmap = make(map[string]string)
+
+	for k, v := range e {
+
+		var (
+			parts = strings.Split(k, prefix)
+			depth = len(parts) - 1
+			last  = parts[depth]
+		)
+
+		if filter(last) {
+
+			if depth > 0 {
+				m[k[1:len(k)]] = v
+			}
+
+		} else {
+			m[k] = v
+		}
+
+	}
+
+	return m
+
+}
+
+// Push prefixes all environment variable keys that match the filter
+// with the given prefix
+func (e Envmap) Push(prefix string, filter func(string) bool) Envmap {
+
+	var m Envmap = make(map[string]string)
+
+	for k, v := range e {
+
+		var (
+			parts = strings.Split(k, prefix)
+			depth = len(parts) - 1
+			last  = parts[depth]
+		)
+
+		if filter(last) {
+			m[prefix+k] = v
+		} else {
+			m[k] = v
+		}
+
+	}
+
+	return m
+
+}
+
 // ToEnv converts a map of environment variables to a slice
 // of key=value strings
 func (e Envmap) ToEnv() (env []string) {

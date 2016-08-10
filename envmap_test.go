@@ -19,6 +19,61 @@ func TestToEnv(t *testing.T) {
 
 }
 
+func TestPushPop(t *testing.T) {
+
+	assert := assert.New(t)
+
+	filter := func(s string) bool {
+		return s == "FOO"
+	}
+
+	m1 := Envmap{
+		"BAR": "bar1",
+		"FOO": "foo1",
+	}
+
+	m2 := m1.Push("_", filter)
+
+	m2["FOO"] = "foo2"
+
+	assert.NotEqual(m1, m2)
+	assert.Equal("bar1", m2["BAR"])
+	assert.Equal("foo2", m2["FOO"])
+	assert.Equal("foo1", m2["_FOO"])
+
+	m3 := m2.Push("_", filter)
+
+	m3["FOO"] = "foo3"
+
+	assert.NotEqual(m2, m3)
+	assert.Equal("bar1", m3["BAR"])
+	assert.Equal("foo3", m3["FOO"])
+	assert.Equal("foo2", m3["_FOO"])
+	assert.Equal("foo1", m3["__FOO"])
+
+	m4 := m3.Pop("_", filter)
+
+	assert.NotEqual(m3, m4)
+	assert.Equal("bar1", m4["BAR"])
+	assert.Equal("foo2", m4["FOO"])
+	assert.Equal("foo1", m4["_FOO"])
+
+	m5 := m4.Pop("_", filter)
+
+	assert.NotEqual(m4, m5)
+	assert.Equal("bar1", m5["BAR"])
+	assert.Equal("foo1", m5["FOO"])
+
+	m6 := m5.Pop("_", filter)
+
+	assert.NotEqual(m5, m6)
+	assert.Equal("bar1", m5["BAR"])
+
+	m7 := m6.Pop("_", filter)
+	assert.Equal(m6, m7)
+
+}
+
 func TestToMap(t *testing.T) {
 
 	assert := assert.New(t)
