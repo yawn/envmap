@@ -20,17 +20,6 @@ func (e Envmap) Export() {
 
 }
 
-// Import creates an Envmap from the actual environment.
-func Import() Envmap {
-	return ToMap(os.Environ())
-}
-
-// Join builds a environment variable declaration out of seperate
-// key and value strings
-func Join(k, v string) string {
-	return strings.Join([]string{k, v}, separator)
-}
-
 // ToEnv converts a map of environment variables to a slice
 // of key=value strings
 func (e Envmap) ToEnv() (env []string) {
@@ -41,6 +30,17 @@ func (e Envmap) ToEnv() (env []string) {
 
 	return
 
+}
+
+// Import creates an Envmap from the actual environment.
+func Import() Envmap {
+	return ToMap(os.Environ())
+}
+
+// Join builds a environment variable declaration out of seperate
+// key and value strings
+func Join(k, v string) string {
+	return strings.Join([]string{k, v}, separator)
 }
 
 // ToMap converts a slice of environment variables to a map
