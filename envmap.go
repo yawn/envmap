@@ -10,6 +10,9 @@ const separator = "="
 // Envmap is a mapping of environment keys to values
 type Envmap map[string]string
 
+// Filter describes a function for filtering on Envmap keys
+type Filter func(string) bool
+
 // Export exports the keys and values defined in this Envmap to the
 // actual environment
 func (e Envmap) Export() {
@@ -22,7 +25,7 @@ func (e Envmap) Export() {
 
 // Pop removes prefixes from all environment variable keys that match the
 // filter. Matching keys that have no prefixes anymore, get dropped.
-func (e Envmap) Pop(prefix string, filter func(string) bool) Envmap {
+func (e Envmap) Pop(prefix string, filter Filter) Envmap {
 
 	var m Envmap = make(map[string]string)
 
@@ -52,7 +55,7 @@ func (e Envmap) Pop(prefix string, filter func(string) bool) Envmap {
 
 // Push prefixes all environment variable keys that match the filter
 // with the given prefix
-func (e Envmap) Push(prefix string, filter func(string) bool) Envmap {
+func (e Envmap) Push(prefix string, filter Filter) Envmap {
 
 	var m Envmap = make(map[string]string)
 
@@ -67,6 +70,22 @@ func (e Envmap) Push(prefix string, filter func(string) bool) Envmap {
 		if filter(last) {
 			m[prefix+k] = v
 		} else {
+			m[k] = v
+		}
+
+	}
+
+	return m
+
+}
+
+func (e Envmap) Subset(filter Filter) Envmap {
+
+	var m Envmap = make(map[string]string)
+
+	for k, v := range e {
+
+		if filter(k) {
 			m[k] = v
 		}
 

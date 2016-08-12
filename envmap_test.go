@@ -2,6 +2,7 @@ package envmap
 
 import (
 	"os"
+	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -71,6 +72,27 @@ func TestPushPop(t *testing.T) {
 
 	m7 := m6.Pop("_", filter)
 	assert.Equal(m6, m7)
+
+}
+
+func TestSubset(t *testing.T) {
+
+	assert := assert.New(t)
+
+	filter := regexp.MustCompile("^(?:FOO|BOO|GOO)$").MatchString
+
+	m1 := Envmap{
+		"BAR": "bar",
+		"BOO": "boo",
+		"FOO": "foo",
+	}
+
+	m2 := m1.Subset(filter)
+
+	assert.NotEqual(m1, m2)
+	assert.Len(m2, 2)
+	assert.Contains(m2, "FOO")
+	assert.Contains(m2, "BOO")
 
 }
 
