@@ -25,45 +25,45 @@ func TestPushPop(t *testing.T) {
 	assert := assert.New(t)
 
 	filter := func(s string) bool {
-		return s == "FOO"
+		return s == "FOO_BAR_WEE"
 	}
 
 	m1 := Envmap{
-		"BAR": "bar1",
-		"FOO": "foo1",
+		"BAR":         "bar1",
+		"FOO_BAR_WEE": "foo1",
 	}
 
 	m2 := m1.Push("_", filter)
 
-	m2["FOO"] = "foo2"
+	m2["FOO_BAR_WEE"] = "foo2"
 
 	assert.NotEqual(m1, m2)
 	assert.Equal("bar1", m2["BAR"])
-	assert.Equal("foo2", m2["FOO"])
-	assert.Equal("foo1", m2["_FOO"])
+	assert.Equal("foo2", m2["FOO_BAR_WEE"])
+	assert.Equal("foo1", m2["_FOO_BAR_WEE"])
 
 	m3 := m2.Push("_", filter)
 
-	m3["FOO"] = "foo3"
+	m3["FOO_BAR_WEE"] = "foo3"
 
 	assert.NotEqual(m2, m3)
 	assert.Equal("bar1", m3["BAR"])
-	assert.Equal("foo3", m3["FOO"])
-	assert.Equal("foo2", m3["_FOO"])
-	assert.Equal("foo1", m3["__FOO"])
+	assert.Equal("foo3", m3["FOO_BAR_WEE"])
+	assert.Equal("foo2", m3["_FOO_BAR_WEE"])
+	assert.Equal("foo1", m3["__FOO_BAR_WEE"])
 
 	m4 := m3.Pop("_", filter)
 
 	assert.NotEqual(m3, m4)
 	assert.Equal("bar1", m4["BAR"])
-	assert.Equal("foo2", m4["FOO"])
-	assert.Equal("foo1", m4["_FOO"])
+	assert.Equal("foo2", m4["FOO_BAR_WEE"])
+	assert.Equal("foo1", m4["_FOO_BAR_WEE"])
 
 	m5 := m4.Pop("_", filter)
 
 	assert.NotEqual(m4, m5)
 	assert.Equal("bar1", m5["BAR"])
-	assert.Equal("foo1", m5["FOO"])
+	assert.Equal("foo1", m5["FOO_BAR_WEE"])
 
 	m6 := m5.Pop("_", filter)
 

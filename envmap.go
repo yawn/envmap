@@ -10,9 +10,6 @@ const separator = "="
 // Envmap is a mapping of environment keys to values
 type Envmap map[string]string
 
-// Filter describes a function for filtering on Envmap keys
-type Filter func(string) bool
-
 // Export exports the keys and values defined in this Envmap to the
 // actual environment
 func (e Envmap) Export() {
@@ -27,17 +24,22 @@ func (e Envmap) Export() {
 // filter. Matching keys that have no prefixes anymore, get dropped.
 func (e Envmap) Pop(prefix string, filter Filter) Envmap {
 
-	var m Envmap = make(map[string]string)
+	var (
+		exp        = PrefixedKeysAll(prefix)
+		m   Envmap = make(map[string]string)
+	)
 
 	for k, v := range e {
 
 		var (
-			parts = strings.Split(k, prefix)
-			depth = len(parts) - 1
-			last  = parts[depth]
+			match = exp.FindStringSubmatch(k)
+			old   = match[1]
+			key   = match[2]
 		)
 
-		if filter(last) {
+		if filter(key) {
+
+			depth := len(old)
 
 			if depth > 0 {
 				m[k[1:len(k)]] = v
@@ -57,17 +59,19 @@ func (e Envmap) Pop(prefix string, filter Filter) Envmap {
 // with the given prefix
 func (e Envmap) Push(prefix string, filter Filter) Envmap {
 
-	var m Envmap = make(map[string]string)
+	var (
+		exp        = PrefixedKeysAll(prefix)
+		m   Envmap = make(map[string]string)
+	)
 
 	for k, v := range e {
 
 		var (
-			parts = strings.Split(k, prefix)
-			depth = len(parts) - 1
-			last  = parts[depth]
+			match = exp.FindStringSubmatch(k)
+			key   = match[2]
 		)
 
-		if filter(last) {
+		if filter(key) {
 			m[prefix+k] = v
 		} else {
 			m[k] = v
@@ -79,6 +83,7 @@ func (e Envmap) Push(prefix string, filter Filter) Envmap {
 
 }
 
+// Subset returns a subset of keys, denoted by the given Filter
 func (e Envmap) Subset(filter Filter) Envmap {
 
 	var m Envmap = make(map[string]string)
