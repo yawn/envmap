@@ -20,6 +20,13 @@ func (e Envmap) Export() {
 
 }
 
+func (e Envmap) IsSet(key string) (ok bool) {
+
+	_, ok = e[key]
+
+	return
+}
+
 // Pop removes prefixes from all environment variable keys that match the
 // filter. Matching keys that have no prefixes anymore, get dropped.
 func (e Envmap) Pop(prefix string, filter Filter) Envmap {
